@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Project RSP</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Halaman login */
+    #loginPage {
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: url('asset/—Pngtree—architectural\ table\ with\ blueprints\ and_5582855.jpg') no-repeat center center/cover; /* ganti sesuai file bg kamu */
+
+    }
+    #loginPage .card {
+      background: #fff;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+      text-align: center;
+      max-width: 380px;
+      width: 100%;
+    }
+    #loginPage img {
+      width: 140px;
+      margin-bottom: 1rem;
+    }
+    #loginPage h3 {
+      font-weight: bold;
+      color: #636363;
+      margin-bottom: 1.5rem;
+    }
+    .btn-login {
+      background-color: #00568c;
+      color: #fff;
+      font-weight: 500;
+      width: 100%;
+    }
+    .btn-login:hover {
+      background-color: #0b5ed7;
+      color: #fff;
+    }
+
+    /* Halaman laporan disembunyikan dulu */
+    #laporanPage {
+      display: none;
+    }
+
+    /* Moto scrolling */
+    .moto-wrapper {
+      overflow: hidden;
+      background: #f0f8ff;
+      border-top: 2px solid #0b5ed7;
+      border-bottom: 2px solid #0b5ed7;
+    }
+    .moto-content {
+      display: flex;
+      white-space: nowrap;
+      animation: scrollMoto 20s linear infinite;
+    }
+    .moto-box {
+      display: inline-block;
+      padding: 1rem 2rem;
+      font-weight: 500;
+      color: #0b5ed7;
+    }
+    @keyframes scrollMoto {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    /* Toast */
+    #toastSuccess {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 9999;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Halaman Login -->
+  <div id="loginPage">
+    <div class="card">
+      <div class="text-center">
+        <img src="asset/logo-rn.png" alt="Logo Rumah Ningrat">
+      </div>
+      <h3>Login Admin Project</h3>
+      <form id="loginForm">
+        <div class="mb-3 text-start">
+          <label class="form-label">Username</label>
+          <input type="text" id="username" class="form-control" required>
+        </div>
+        <div class="mb-3 text-start">
+          <label class="form-label">Password</label>
+          <input type="password" id="password" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-login">Login</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Halaman Utama (Laporan) -->
+  <div id="laporanPage">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary py-2">
+      <div class="container">
+        <a class="navbar-brand d-flex align-items-center" href="#">
+          <img src="asset/logo-rsp-2.png" alt="Logo" class="brand-logo" style="height:40px;">
+        </a>
+      </div>
+    </nav>
+
+    <!-- Moto Rumah Ningrat -->
+    <div class="moto-wrapper py-2">
+      <div class="moto-content">
+        <div class="moto-box">📘 Pembelajar – Belajarlah Setiap Hari, Tidak Ada Kesejahteraan Bagi Yang Tidak Berkembang</div>
+        <div class="moto-box">💡 Positif & Proaktif – Pasti Bisa Mencapai Target, Dengan Selalu Positif Dan Proaktif</div>
+        <div class="moto-box">⚡ Cepat – Tidak Ada Masa Depan, Bagi Mereka Yang Lambat</div>
+        <div class="moto-box">📏 Disiplin – Disiplin Dan Konsisten, Adalah Jati Diri Kita</div>
+        <!-- Duplikat untuk looping mulus -->
+        <div class="moto-box">📘 Pembelajar – Belajarlah Setiap Hari, Tidak Ada Kesejahteraan Bagi Yang Tidak Berkembang</div>
+        <div class="moto-box">💡 Positif & Proaktif – Pasti Bisa Mencapai Target, Dengan Selalu Positif Dan Proaktif</div>
+        <div class="moto-box">⚡ Cepat – Tidak Ada Masa Depan, Bagi Mereka Yang Lambat</div>
+        <div class="moto-box">📏 Disiplin – Disiplin Dan Konsisten, Adalah Jati Diri Kita</div>
+      </div>
+    </div>
+
+    <!-- Form Input -->
+    <div class="container my-5">
+      <h2 class="mb-4 text-center fw-bold text-primary">Laporan Harian Admin Project</h2>
+      <form id="laporanForm" class="card shadow p-4">
+        <div class="row mb-3">
+          <div class="col-md-6 mb-3 mb-md-0">
+            <label class="form-label">Nama Admin</label>
+            <select id="namaAdmin" class="form-select" required>
+              <option value="">-- Pilih Admin --</option>
+              <option>Maedi</option>
+              <option>Dawifanegara</option>
+              <option>Adyas Ibnu Adnan</option>
+              <option>Rivan Maulana Sadid</option>
+              <option>Akmal Rivai</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Tanggal Laporan</label>
+            <input type="date" id="tanggalLaporan" class="form-control" required>
+          </div>
+        </div>
+
+        <!-- Poin laporan -->
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Report MPP</label>
+          <input type="file" id="fotoMpp" class="form-control mb-2">
+          <textarea id="reportMpp" class="form-control" placeholder="Note..."></textarea>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Report Issue</label>
+          <input type="file" id="fotoIssue" class="form-control mb-2">
+          <textarea id="reportIssue" class="form-control" placeholder="Note..."></textarea>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Report Material</label>
+          <input type="file" id="fotoMaterial" class="form-control mb-2">
+          <textarea id="reportMaterial" class="form-control" placeholder="Note..."></textarea>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Report Progres</label>
+          <input type="file" id="fotoProgres" class="form-control mb-2">
+          <textarea id="reportProgres" class="form-control" placeholder="Note..."></textarea>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Report Ceklist</label>
+          <input type="file" id="fotoCeklist" class="form-control mb-2">
+          <textarea id="reportCeklist" class="form-control" placeholder="Note..."></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Simpan Laporan</button>
+      </form>
+    </div>
+
+    <!-- Rekap Data -->
+    <div class="container mb-5">
+      <h3 class="mb-3 text-center fw-bold">📊 Rekap Laporan</h3>
+      <div class="d-flex justify-content-end mb-2">
+        <button class="btn btn-success" id="exportExcel">Export ke Excel</button>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-bordered table-striped" id="rekapTable">
+          <thead class="table-primary">
+            <tr>
+              <th>Nama Admin</th>
+              <th>Tanggal</th>
+              <th>Report MPP</th>
+              <th>Report Issue</th>
+              <th>Report Material</th>
+              <th>Report Progres</th>
+              <th>Report Ceklist</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toastSuccess" class="toast align-items-center text-bg-success border-0" role="alert">
+    <div class="d-flex">
+      <div class="toast-body">✅ Laporan berhasil disimpan!</div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" onclick="hideToast()"></button>
+    </div>
+  </div>
+
+  <footer class="footer sticky-bottom">
+    <div class="container text-center">
+      <p class="mb-0 small">&copy; 2025 <strong>Admin Project</strong>. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- Modal untuk perbesar foto -->
+<div class="modal fade" id="imgModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-body text-center">
+        <img id="modalImg" style="width:100%;">
+      </div>
+    </div>
+  </div>
+</div>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+  // ---------------- LOGIN ----------------
+  const loginForm = document.getElementById("loginForm");
+  const loginPage = document.getElementById("loginPage");
+  const laporanPage = document.getElementById("laporanPage");
+
+  loginForm.addEventListener("submit", function(e) {
+    e.preventDefault();
+    const user = document.getElementById("username").value;
+    const pass = document.getElementById("password").value;
+
+    if(user === "admin" && pass === "1234"){
+      loginPage.style.display = "none";
+      laporanPage.style.display = "block";
+    } else {
+      alert("❌ Username atau password salah!");
+    }
+  });
+
+  // ---------------- LAPORAN DENGAN LOCALSTORAGE ----------------
+  const laporanForm = document.getElementById("laporanForm");
+  const rekapTable = document.getElementById("rekapTable").querySelector("tbody");
+  const exportBtn = document.getElementById("exportExcel");
+  const modalImg = document.getElementById("modalImg");
+
+  // Ambil data dari LocalStorage jika ada
+  let laporanData = JSON.parse(localStorage.getItem("laporanHarian")) || [];
+
+  // Fungsi render tabel dari data
+  function renderTable() {
+    rekapTable.innerHTML = ""; // kosongkan tbody dulu
+    laporanData.forEach((item, index) => {
+      const row = rekapTable.insertRow();
+      row.insertCell().textContent = item.namaAdmin;
+      row.insertCell().textContent = item.tanggal;
+
+      item.fotos.forEach(fileObj => {
+        const cell = row.insertCell();
+        if(fileObj){
+          const img = document.createElement("img");
+          img.src = fileObj.src;
+          img.style.maxWidth = "100px";
+          img.style.maxHeight = "100px";
+          img.style.cursor = "pointer";
+          img.onclick = () => {
+            modalImg.src = img.src;
+            new bootstrap.Modal(document.getElementById('imgModal')).show();
+          }
+          cell.appendChild(img);
+        } else {
+          cell.textContent = "";
+        }
+      });
+
+      // Tambah kolom tombol hapus
+      const hapusCell = row.insertCell();
+      const hapusBtn = document.createElement("button");
+      hapusBtn.textContent = "Hapus";
+      hapusBtn.className = "btn btn-sm btn-danger";
+      hapusBtn.onclick = () => {
+        if(confirm("⚠️ Apakah Anda yakin ingin menghapus laporan ini?")){
+          laporanData.splice(index, 1); // hapus data dari array
+          localStorage.setItem("laporanHarian", JSON.stringify(laporanData)); // update LocalStorage
+          renderTable(); // render ulang tabel
+        }
+      };
+      hapusCell.appendChild(hapusBtn);
+    });
+  }
+
+  // Render tabel saat halaman dibuka
+  renderTable();
+
+  laporanForm.addEventListener("submit", function(e){
+    e.preventDefault();
+
+    const tgl = document.getElementById("tanggalLaporan").value;
+    if(new Date(tgl) > new Date()){
+      alert("❌ Tanggal laporan tidak boleh di masa depan!");
+      return;
+    }
+
+    const namaAdmin = document.getElementById("namaAdmin").value;
+    const fotoInputs = [
+      document.getElementById("fotoMpp"),
+      document.getElementById("fotoIssue"),
+      document.getElementById("fotoMaterial"),
+      document.getElementById("fotoProgres"),
+      document.getElementById("fotoCeklist")
+    ];
+
+    const fotos = fotoInputs.map(input => {
+      const file = input.files[0];
+      if(file){
+        return { name: file.name, src: URL.createObjectURL(file) };
+      } else {
+        return null;
+      }
+    });
+
+    // Tambahkan data ke array dan simpan ke LocalStorage
+    laporanData.push({ namaAdmin, tanggal: tgl, fotos });
+    localStorage.setItem("laporanHarian", JSON.stringify(laporanData));
+
+    // Render tabel ulang
+    renderTable();
+
+    laporanForm.reset();
+    showToast();
+  });
+
+  // ---------------- TOAST ----------------
+  function showToast(){
+    const toast = document.getElementById("toastSuccess");
+    toast.style.display = "block";
+    setTimeout(() => { toast.style.display = "none"; }, 2500);
+  }
+  function hideToast(){
+    document.getElementById("toastSuccess").style.display = "none";
+  }
+
+  // ---------------- EXPORT EXCEL ----------------
+  exportBtn.addEventListener("click", () => {
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.table_to_sheet(document.getElementById("rekapTable"));
+    XLSX.utils.book_append_sheet(wb, ws, "Laporan Harian");
+    XLSX.writeFile(wb, "Laporan_Harian.xlsx");
+  });
+</script>
+
+
+</body>
+</html>

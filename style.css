@@ -1,0 +1,179 @@
+body {
+  font-family: 'Poppins', sans-serif;
+  background-color: #f8f9fa;
+  color: #212529;
+}
+
+h2, h3 {
+  font-weight: 700;
+}
+
+.card {
+  border-radius: 12px;
+}
+
+.btn-primary {
+  background-color: #00568c;
+  border: none;
+}
+
+.btn-primary:hover {
+  background-color: #0a58ca;
+}
+
+.btn-success {
+  background-color: #ffc107;
+  border: none;
+  color: #000;
+  font-weight: 600;
+}
+
+.btn-success:hover {
+  background-color: #e0a800;
+  color: #fff;
+}
+
+.table {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.table thead {
+  background-color: #00568c;
+  color: #fff;
+}
+/* Logo di navbar */
+.brand-logo {
+  width: 40px;
+  height: 40px;
+  object-fit: contain; /* biar logo tidak gepeng */
+}
+/* Logo lebih besar */
+.brand-logo {
+  height: 60px;   /* atur sesuai kebutuhan, misalnya 60px */
+  width: auto;    /* otomatis proporsional */
+}
+
+/* Tulisan brand */
+.brand-text {
+  font-size: 1.4rem;   /* agak besar */
+  letter-spacing: 1px;
+  color: #fff;
+}
+
+/* Warna biru navbar */
+.navbar {
+  background-color: #00568c !important; /* biru sesuai contoh */
+}
+.brand-logo {
+  height: 60px; 
+  width: auto;
+}
+
+.brand-tagline {
+  font-size: 1rem;
+  font-style: italic;
+  color: #fff;
+  font-weight: 300;
+}
+
+.moto-wrapper {
+  overflow: hidden;
+  background: #f8f9fa;
+  border-top: 2px solid #0d6efd;
+  border-bottom: 2px solid #0d6efd;
+  white-space: nowrap;
+}
+
+.moto-content {
+  display: flex;
+}
+
+.moto-track {
+  display: flex;
+  animation: scrollMoto 25s linear infinite;
+}
+
+.moto-box {
+  flex: 0 0 auto;
+  padding: 8px 20px;
+  margin: 0 15px;
+  border: 2px solid #0d6efd;
+  border-radius: 8px;
+  font-weight: 600;
+  color: #0d6efd;
+  background: #fff;
+  white-space: nowrap;
+}
+
+@keyframes scrollMoto {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+
+
+/* Style tombol "Choose File" */
+input[type="file"]::file-selector-button {
+  background-color: #ffc107;   /* kuning sesuai tema */
+  color: #000;                 /* teks hitam biar kontras */
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+/* Hover efek */
+input[type="file"]::file-selector-button:hover {
+  background-color: #e0a800; /* kuning lebih gelap */
+}
+.text-annvar {
+  color: #00568c; /* sama dengan bg-primary Bootstrap */
+  /* kalau navbar kamu pakai warna custom, ganti kode hex sesuai navbar */
+}
+.footer {
+  background-color: #00568c; /* warna biru gelap */
+  color: #ffffff;
+  padding: 15px 0;
+  font-size: 14px;
+}
+
+.footer p {
+  margin: 0;
+}
+
+.footer strong {
+  color: #ffd700; /* emas/kuning untuk nama biar beda */
+}
+/* Optimasi mobile */
+@media (max-width: 576px) {
+  #loginPage .card {
+    max-width: 95%;
+    padding: 1.2rem;
+  }
+
+  #loginPage img {
+    width: 140px;
+  }
+
+  .moto-box {
+    font-size: 0.85rem;
+    padding: 6px 10px;
+  }
+
+  footer .small {
+    font-size: 0.75rem;
+  }
+}
+@media (max-width: 768px) {
+  .moto-box {
+    font-size: 0.9rem;
+    white-space: nowrap;
+  }
+}
+
