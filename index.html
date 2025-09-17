@@ -258,65 +258,64 @@
     if(user === "admin" && pass === "1234"){
       loginPage.style.display = "none";
       laporanPage.style.display = "block";
+      fetchData(); // ambil data saat login
     } else {
       alert("❌ Username atau password salah!");
     }
   });
 
-  // ---------------- LAPORAN DENGAN LOCALSTORAGE ----------------
+  // ---------------- VARIABEL ----------------
   const laporanForm = document.getElementById("laporanForm");
   const rekapTable = document.getElementById("rekapTable").querySelector("tbody");
   const exportBtn = document.getElementById("exportExcel");
   const modalImg = document.getElementById("modalImg");
 
-  // Ambil data dari LocalStorage jika ada
-  let laporanData = JSON.parse(localStorage.getItem("laporanHarian")) || [];
+  const webAppURL = "https://script.google.com/macros/s/AKfycbyESsOIQ3aXNwMPZZfoX6nmZubM8SPqTHclDC4Z0uSQ-IEIyMJ1sobUyG4MIUKtgumsTA/exec";
 
-  // Fungsi render tabel dari data
-  function renderTable() {
-    rekapTable.innerHTML = ""; // kosongkan tbody dulu
-    laporanData.forEach((item, index) => {
+  // ---------------- FUNCTION TOAST ----------------
+  function showToast(){
+    const toast = document.getElementById("toastSuccess");
+    toast.style.display = "block";
+    setTimeout(() => { toast.style.display = "none"; }, 2500);
+  }
+  function hideToast(){
+    document.getElementById("toastSuccess").style.display = "none";
+  }
+
+  // ---------------- FUNCTION RENDER TABEL ----------------
+  function renderTable(dataArray){
+    rekapTable.innerHTML = "";
+    dataArray.forEach((item, index) => {
       const row = rekapTable.insertRow();
-      row.insertCell().textContent = item.namaAdmin;
-      row.insertCell().textContent = item.tanggal;
+      row.insertCell().textContent = item[0]; // Nama Admin
+      row.insertCell().textContent = item[1]; // Tanggal
+      row.insertCell().textContent = item[2]; // Report MPP
+      row.insertCell().textContent = item[3]; // Report Issue
+      row.insertCell().textContent = item[4]; // Report Material
+      row.insertCell().textContent = item[5]; // Report Progres
+      row.insertCell().textContent = item[6]; // Report Ceklist
 
-      item.fotos.forEach(fileObj => {
-        const cell = row.insertCell();
-        if(fileObj){
-          const img = document.createElement("img");
-          img.src = fileObj.src;
-          img.style.maxWidth = "100px";
-          img.style.maxHeight = "100px";
-          img.style.cursor = "pointer";
-          img.onclick = () => {
-            modalImg.src = img.src;
-            new bootstrap.Modal(document.getElementById('imgModal')).show();
-          }
-          cell.appendChild(img);
-        } else {
-          cell.textContent = "";
-        }
-      });
-
-      // Tambah kolom tombol hapus
+      // Kolom hapus (opsional, bisa aktifkan nanti)
       const hapusCell = row.insertCell();
       const hapusBtn = document.createElement("button");
       hapusBtn.textContent = "Hapus";
       hapusBtn.className = "btn btn-sm btn-danger";
-      hapusBtn.onclick = () => {
-        if(confirm("⚠️ Apakah Anda yakin ingin menghapus laporan ini?")){
-          laporanData.splice(index, 1); // hapus data dari array
-          localStorage.setItem("laporanHarian", JSON.stringify(laporanData)); // update LocalStorage
-          renderTable(); // render ulang tabel
-        }
-      };
+      hapusBtn.onclick = () => alert("❌ Hapus data dari Google Sheets harus manual di Sheet");
       hapusCell.appendChild(hapusBtn);
     });
   }
 
-  // Render tabel saat halaman dibuka
-  renderTable();
+  // ---------------- FETCH DATA DARI SHEET ----------------
+  function fetchData(){
+    fetch(webAppURL)
+      .then(res => res.json())
+      .then(data => {
+        renderTable(data);
+      })
+      .catch(err => console.error("Error fetch data:", err));
+  }
 
+  // ---------------- SUBMIT LAPORAN KE GOOGLE SHEET ----------------
   laporanForm.addEventListener("submit", function(e){
     e.preventDefault();
 
@@ -327,43 +326,37 @@
     }
 
     const namaAdmin = document.getElementById("namaAdmin").value;
-    const fotoInputs = [
-      document.getElementById("fotoMpp"),
-      document.getElementById("fotoIssue"),
-      document.getElementById("fotoMaterial"),
-      document.getElementById("fotoProgres"),
-      document.getElementById("fotoCeklist")
-    ];
+    const reportMpp = document.getElementById("reportMpp").value;
+    const reportIssue = document.getElementById("reportIssue").value;
+    const reportMaterial = document.getElementById("reportMaterial").value;
+    const reportProgres = document.getElementById("reportProgres").value;
+    const reportCeklist = document.getElementById("reportCeklist").value;
 
-    const fotos = fotoInputs.map(input => {
-      const file = input.files[0];
-      if(file){
-        return { name: file.name, src: URL.createObjectURL(file) };
+    fetch(webAppURL, {
+      method: "POST",
+      body: JSON.stringify({
+        namaAdmin,
+        tanggal: tgl,
+        reportMpp,
+        reportIssue,
+        reportMaterial,
+        reportProgres,
+        reportCeklist
+      }),
+      headers: { "Content-Type": "application/json" }
+    })
+    .then(res => res.json())
+    .then(data => {
+      if(data.status === "success"){
+        showToast();
+        laporanForm.reset();
+        fetchData(); // update tabel otomatis
       } else {
-        return null;
+        alert("❌ Gagal simpan laporan");
       }
-    });
-
-    // Tambahkan data ke array dan simpan ke LocalStorage
-    laporanData.push({ namaAdmin, tanggal: tgl, fotos });
-    localStorage.setItem("laporanHarian", JSON.stringify(laporanData));
-
-    // Render tabel ulang
-    renderTable();
-
-    laporanForm.reset();
-    showToast();
+    })
+    .catch(err => alert("❌ Terjadi error: " + err));
   });
-
-  // ---------------- TOAST ----------------
-  function showToast(){
-    const toast = document.getElementById("toastSuccess");
-    toast.style.display = "block";
-    setTimeout(() => { toast.style.display = "none"; }, 2500);
-  }
-  function hideToast(){
-    document.getElementById("toastSuccess").style.display = "none";
-  }
 
   // ---------------- EXPORT EXCEL ----------------
   exportBtn.addEventListener("click", () => {
@@ -372,7 +365,9 @@
     XLSX.utils.book_append_sheet(wb, ws, "Laporan Harian");
     XLSX.writeFile(wb, "Laporan_Harian.xlsx");
   });
+
 </script>
+
 
 
 </body>
