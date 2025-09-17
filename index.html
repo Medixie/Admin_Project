@@ -244,7 +244,7 @@
   <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-  <script>
+ <script>
   // ---------------- LOGIN ----------------
   const loginForm = document.getElementById("loginForm");
   const loginPage = document.getElementById("loginPage");
@@ -268,96 +268,73 @@
   const laporanForm = document.getElementById("laporanForm");
   const rekapTable = document.getElementById("rekapTable").querySelector("tbody");
   const exportBtn = document.getElementById("exportExcel");
-  const modalImg = document.getElementById("modalImg");
 
-  const webAppURL = "https://script.google.com/macros/s/AKfycbyESsOIQ3aXNwMPZZfoX6nmZubM8SPqTHclDC4Z0uSQ-IEIyMJ1sobUyG4MIUKtgumsTA/exec";
+const webAppURL = "https://script.google.com/macros/s/AKfycbzoskezVDkE23SMk8DCvc01_30uzDRWcl3RePeJ8QV816dY9vno8gKHTH46ADkFyas2wg/exec"; // ganti dengan URL Web App hasil deploy
 
-  // ---------------- FUNCTION TOAST ----------------
-  function showToast(){
-    const toast = document.getElementById("toastSuccess");
-    toast.style.display = "block";
-    setTimeout(() => { toast.style.display = "none"; }, 2500);
-  }
-  function hideToast(){
-    document.getElementById("toastSuccess").style.display = "none";
-  }
+// Render tabel
+function renderTable(dataArray){
+  const tbody = document.getElementById("rekapTable").querySelector("tbody");
+  tbody.innerHTML = "";
+  dataArray.forEach(item => {
+    const row = tbody.insertRow();
+    item.forEach(cell => row.insertCell().textContent = cell);
+    const hapusCell = row.insertCell();
+    const hapusBtn = document.createElement("button");
+    hapusBtn.textContent = "Hapus";
+    hapusBtn.className = "btn btn-sm btn-danger";
+    hapusBtn.onclick = () => alert("Hapus harus manual di Sheets");
+    hapusCell.appendChild(hapusBtn);
+  });
+}
 
-  // ---------------- FUNCTION RENDER TABEL ----------------
-  function renderTable(dataArray){
-    rekapTable.innerHTML = "";
-    dataArray.forEach((item, index) => {
-      const row = rekapTable.insertRow();
-      row.insertCell().textContent = item[0]; // Nama Admin
-      row.insertCell().textContent = item[1]; // Tanggal
-      row.insertCell().textContent = item[2]; // Report MPP
-      row.insertCell().textContent = item[3]; // Report Issue
-      row.insertCell().textContent = item[4]; // Report Material
-      row.insertCell().textContent = item[5]; // Report Progres
-      row.insertCell().textContent = item[6]; // Report Ceklist
-
-      // Kolom hapus (opsional, bisa aktifkan nanti)
-      const hapusCell = row.insertCell();
-      const hapusBtn = document.createElement("button");
-      hapusBtn.textContent = "Hapus";
-      hapusBtn.className = "btn btn-sm btn-danger";
-      hapusBtn.onclick = () => alert("❌ Hapus data dari Google Sheets harus manual di Sheet");
-      hapusCell.appendChild(hapusBtn);
-    });
-  }
-
-  // ---------------- FETCH DATA DARI SHEET ----------------
-  function fetchData(){
-    fetch(webAppURL)
-      .then(res => res.json())
-      .then(data => {
-        renderTable(data);
-      })
-      .catch(err => console.error("Error fetch data:", err));
-  }
-
-  // ---------------- SUBMIT LAPORAN KE GOOGLE SHEET ----------------
-  laporanForm.addEventListener("submit", function(e){
-    e.preventDefault();
-
-    const tgl = document.getElementById("tanggalLaporan").value;
-    if(new Date(tgl) > new Date()){
-      alert("❌ Tanggal laporan tidak boleh di masa depan!");
-      return;
-    }
-
-    const namaAdmin = document.getElementById("namaAdmin").value;
-    const reportMpp = document.getElementById("reportMpp").value;
-    const reportIssue = document.getElementById("reportIssue").value;
-    const reportMaterial = document.getElementById("reportMaterial").value;
-    const reportProgres = document.getElementById("reportProgres").value;
-    const reportCeklist = document.getElementById("reportCeklist").value;
-
-    fetch(webAppURL, {
-      method: "POST",
-      body: JSON.stringify({
-        namaAdmin,
-        tanggal: tgl,
-        reportMpp,
-        reportIssue,
-        reportMaterial,
-        reportProgres,
-        reportCeklist
-      }),
-      headers: { "Content-Type": "application/json" }
-    })
+// Ambil data
+function fetchData(){
+  fetch(webAppURL)
     .then(res => res.json())
-    .then(data => {
-      if(data.status === "success"){
-        showToast();
-        laporanForm.reset();
-        fetchData(); // update tabel otomatis
+    .then(res => {
+      if(res.status === "success"){
+        renderTable(res.data);
       } else {
-        alert("❌ Gagal simpan laporan");
+        alert("❌ Error: " + res.message);
       }
     })
     .catch(err => alert("❌ Terjadi error: " + err));
-  });
+}
 
+// Submit data
+document.getElementById("laporanForm").addEventListener("submit", function(e){
+  e.preventDefault();
+
+  const data = {
+    namaAdmin: document.getElementById("namaAdmin").value,
+    tanggal: document.getElementById("tanggalLaporan").value,
+    reportMpp: document.getElementById("reportMpp").value,
+    reportIssue: document.getElementById("reportIssue").value,
+    reportMaterial: document.getElementById("reportMaterial").value,
+    reportProgres: document.getElementById("reportProgres").value,
+    reportCeklist: document.getElementById("reportCeklist").value
+  };
+
+  fetch(webAppURL, {
+    method: "POST",
+    body: JSON.stringify(data),
+    headers: { "Content-Type": "application/json" }
+  })
+  .then(res => res.json())
+  .then(res => {
+    if(res.status === "success"){
+      alert("✅ Laporan berhasil disimpan!");
+      document.getElementById("laporanForm").reset();
+      fetchData();
+    } else {
+      alert("❌ Gagal simpan laporan: " + res.message);
+    }
+  })
+  .catch(err => alert("❌ Terjadi error: " + err));
+});
+
+// Load data saat login halaman tampil
+fetchData();
   // ---------------- EXPORT EXCEL ----------------
   exportBtn.addEventListener("click", () => {
     const wb = XLSX.utils.book_new();
@@ -365,7 +342,6 @@
     XLSX.utils.book_append_sheet(wb, ws, "Laporan Harian");
     XLSX.writeFile(wb, "Laporan_Harian.xlsx");
   });
-
 </script>
 
 
