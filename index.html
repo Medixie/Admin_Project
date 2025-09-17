@@ -85,6 +85,14 @@
 </head>
 <body>
 
+  <!-- Footer: letakkan setelah semua div utama -->
+<footer class="footer">
+  <div class="container text-center">
+    <p class="mb-0 small">&copy; 2025 <strong>Admin Project</strong>. All rights reserved.</p>
+  </div>
+</footer>
+
+
   <!-- Halaman Login -->
   <div id="loginPage">
     <div class="card">
@@ -106,6 +114,11 @@
     </div>
   </div>
 
+  <!-- Loading Spinner -->
+<div id="loadingOverlay" style="display:none;">
+  <div class="spinner"></div>
+</div>
+
   <!-- Halaman Utama (Laporan) -->
   <div id="laporanPage">
     <!-- Navbar -->
@@ -120,6 +133,11 @@
     <!-- Moto Rumah Ningrat -->
     <div class="moto-wrapper py-2">
       <div class="moto-content">
+        <div class="moto-box">📘 Pembelajar – Belajarlah Setiap Hari, Tidak Ada Kesejahteraan Bagi Yang Tidak Berkembang</div>
+        <div class="moto-box">💡 Positif & Proaktif – Pasti Bisa Mencapai Target, Dengan Selalu Positif Dan Proaktif</div>
+        <div class="moto-box">⚡ Cepat – Tidak Ada Masa Depan, Bagi Mereka Yang Lambat</div>
+        <div class="moto-box">📏 Disiplin – Disiplin Dan Konsisten, Adalah Jati Diri Kita</div>
+        <!-- Duplikat untuk looping mulus -->
         <div class="moto-box">📘 Pembelajar – Belajarlah Setiap Hari, Tidak Ada Kesejahteraan Bagi Yang Tidak Berkembang</div>
         <div class="moto-box">💡 Positif & Proaktif – Pasti Bisa Mencapai Target, Dengan Selalu Positif Dan Proaktif</div>
         <div class="moto-box">⚡ Cepat – Tidak Ada Masa Depan, Bagi Mereka Yang Lambat</div>
@@ -189,31 +207,35 @@
       </form>
     </div>
 
-    <!-- Rekap Data -->
-    <div class="container mb-5">
-      <h3 class="mb-3 text-center fw-bold">📊 Rekap Laporan</h3>
-      <div class="d-flex justify-content-end mb-2">
-        <button class="btn btn-success" id="exportExcel">Export ke Excel</button>
-      </div>
-      <div class="table-responsive">
-        <table class="table table-bordered table-striped" id="rekapTable">
-          <thead class="table-primary">
-            <tr>
-              <th>Nama Admin</th>
-              <th>Tanggal</th>
-              <th>Report MPP</th>
-              <th>Report Issue</th>
-              <th>Report Material</th>
-              <th>Report Progres</th>
-              <th>Report Ceklist</th>
-              <th>Aksi</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
-    </div>
+    
+   <div class="container mb-5">
+  <h3 class="mb-3 text-center fw-bold">📊 Rekap Laporan</h3>
+
+  <div class="d-flex justify-content-end mb-2">
+    <button class="btn btn-success" id="exportExcel">Export ke Excel</button>
   </div>
+
+  <div class="table-responsive">
+    <table class="table table-bordered table-striped" id="rekapTable">
+      <thead class="table-primary">
+  <tr>
+    <th>Nama Admin</th>
+    <th>Tanggal</th>
+    <th>Report MPP</th>
+    <th>Report Issue</th>
+    <th>Report Material</th>
+    <th>Report Progres</th>
+    <th>Report Ceklist</th>
+  </tr>
+</thead>
+
+      <tbody>
+        <!-- Data akan ditambahkan secara dinamis melalui JavaScript -->
+      </tbody>
+    </table>
+  </div>
+</div>
+
 
   <!-- Toast -->
   <div id="toastSuccess" class="toast align-items-center text-bg-success border-0" role="alert">
@@ -245,49 +267,192 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
  <script>
+  document.addEventListener("DOMContentLoaded", function() {
   // ---------------- LOGIN ----------------
   const loginForm = document.getElementById("loginForm");
   const loginPage = document.getElementById("loginPage");
   const laporanPage = document.getElementById("laporanPage");
 
-  loginForm.addEventListener("submit", function(e) {
-    e.preventDefault();
-    const user = document.getElementById("username").value;
-    const pass = document.getElementById("password").value;
+  loginForm.addEventListener("submit", function(e){
+  e.preventDefault();
 
-    if(user === "admin" && pass === "1234"){
+  const user = document.getElementById("username").value;
+  const pass = document.getElementById("password").value;
+
+  if(user === "admin" && pass === "1234"){
+    // tampilkan spinner
+    document.getElementById("loadingOverlay").style.display = "flex";
+
+    setTimeout(() => {
+      // sembunyikan login, tampilkan halaman utama
       loginPage.style.display = "none";
       laporanPage.style.display = "block";
-      fetchData(); // ambil data saat login
-    } else {
-      alert("❌ Username atau password salah!");
-    }
-  });
+
+      // sembunyikan spinner
+      document.getElementById("loadingOverlay").style.display = "none";
+
+      // ambil data tabel atau fungsi lain
+      fetchData();
+    }, 1500); // durasi spinner
+  } else {
+    alert("❌ Username atau password salah!");
+  }
+});
+
+  
 
   // ---------------- VARIABEL ----------------
   const laporanForm = document.getElementById("laporanForm");
   const rekapTable = document.getElementById("rekapTable").querySelector("tbody");
   const exportBtn = document.getElementById("exportExcel");
+  const webAppURL = "https://script.google.com/macros/s/AKfycbyoFx_1vFTWsqaHcRet9cO3mJuTztMmIYHEKZ609WKyiQL36YqBb7ArUHvOcFzQAFfoNg/exec";
 
-const webAppURL = "https://script.google.com/macros/s/AKfycbzoskezVDkE23SMk8DCvc01_30uzDRWcl3RePeJ8QV816dY9vno8gKHTH46ADkFyas2wg/exec"; // ganti dengan URL Web App hasil deploy
+  // helper: ambil value input aman
+  function getInputValue(id){
+    const el = document.getElementById(id);
+    return el ? el.value : "";
+  }
 
-// Render tabel
-function renderTable(dataArray){
-  const tbody = document.getElementById("rekapTable").querySelector("tbody");
-  tbody.innerHTML = "";
-  dataArray.forEach(item => {
-    const row = tbody.insertRow();
-    item.forEach(cell => row.insertCell().textContent = cell);
-    const hapusCell = row.insertCell();
-    const hapusBtn = document.createElement("button");
-    hapusBtn.textContent = "Hapus";
-    hapusBtn.className = "btn btn-sm btn-danger";
-    hapusBtn.onclick = () => alert("Hapus harus manual di Sheets");
-    hapusCell.appendChild(hapusBtn);
+  // helper: ubah file ke base64
+  function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result.split(",")[1]); // ambil base64 saja
+      reader.onerror = error => reject(error);
+      reader.readAsDataURL(file);
+    });
+  }
+
+  // helper: ambil foto file input
+  async function ambilFoto(id) {
+    const fileInput = document.getElementById(id);
+    if(fileInput && fileInput.files.length > 0){
+      return await fileToBase64(fileInput.files[0]);
+    }
+    return ""; // kalau kosong
+  }
+
+  // ---------------- SUBMIT FORM ----------------
+  laporanForm.addEventListener("submit", async function(e){
+  e.preventDefault();
+
+  // --- tampilkan spinner sebelum fetch ---
+  document.getElementById("loadingOverlay").style.display = "flex";
+
+  // ambil semua data teks
+  let data = {
+    namaAdmin: getInputValue("namaAdmin"),
+    tanggal: getInputValue("tanggalLaporan"),
+    reportMpp: getInputValue("reportMpp"),
+    reportIssue: getInputValue("reportIssue"),
+    reportMaterial: getInputValue("reportMaterial"),
+    reportProgres: getInputValue("reportProgres"),
+    reportCeklist: getInputValue("reportCeklist"),
+  };
+
+  // ambil semua foto
+  data.fotoMpp = await ambilFoto("fotoMpp");
+  data.fotoIssue = await ambilFoto("fotoIssue");
+  data.fotoMaterial = await ambilFoto("fotoMaterial");
+  data.fotoProgres = await ambilFoto("fotoProgres");
+  data.fotoCeklist = await ambilFoto("fotoCeklist");
+
+  // kirim ke server
+  fetch(webAppURL, {
+    method: "POST",
+    body: JSON.stringify(data)
+  })
+  .then(res => res.json())
+  .then(res => {
+    // --- sembunyikan spinner setelah fetch selesai ---
+    document.getElementById("loadingOverlay").style.display = "none";
+
+    if(res.status === "success"){
+      alert("✅ Laporan berhasil disimpan!");
+      laporanForm.reset(); // reset form
+      fetchData(); // refresh tabel
+    } else {
+      alert("❌ Gagal: " + res.message);
+    }
+  })
+  .catch(err => {
+    document.getElementById("loadingOverlay").style.display = "none"; // sembunyikan juga kalau error
+    alert("❌ Error: " + err);
   });
-}
+});
 
-// Ambil data
+  // ---------------- RENDER TABLE ----------------
+  // ---------------- RENDER TABLE ----------------
+function renderTable(dataArray){
+  rekapTable.innerHTML = "";
+
+  dataArray.forEach(item => {
+    const row = rekapTable.insertRow();
+
+    // Nama Admin
+    row.insertCell().textContent = item.namaAdmin || "";
+
+    // Tanggal
+    row.insertCell().textContent = item.tanggal || "";
+
+    // Foto MPP
+    const cellMpp = row.insertCell();
+    if(item.fotoMpp) {
+      const img = document.createElement('img');
+      img.src = 'data:image/jpeg;base64,' + item.fotoMpp;
+      img.style.width = '80px';
+      img.style.cursor = 'pointer';
+      img.addEventListener('click', () => showModal(img.src));
+      cellMpp.appendChild(img);
+    }
+
+    // Foto Issue
+    const cellIssue = row.insertCell();
+    if(item.fotoIssue) {
+      const img = document.createElement('img');
+      img.src = 'data:image/jpeg;base64,' + item.fotoIssue;
+      img.style.width = '80px';
+      img.style.cursor = 'pointer';
+      img.addEventListener('click', () => showModal(img.src));
+      cellIssue.appendChild(img);
+    }
+
+    // Foto Material
+    const cellMaterial = row.insertCell();
+    if(item.fotoMaterial) {
+      const img = document.createElement('img');
+      img.src = 'data:image/jpeg;base64,' + item.fotoMaterial;
+      img.style.width = '80px';
+      img.style.cursor = 'pointer';
+      img.addEventListener('click', () => showModal(img.src));
+      cellMaterial.appendChild(img);
+    }
+
+    // Foto Progres
+    const cellProgres = row.insertCell();
+    if(item.fotoProgres) {
+      const img = document.createElement('img');
+      img.src = 'data:image/jpeg;base64,' + item.fotoProgres;
+      img.style.width = '80px';
+      img.style.cursor = 'pointer';
+      img.addEventListener('click', () => showModal(img.src));
+      cellProgres.appendChild(img);
+    }
+
+    // Foto Ceklist
+    const cellCeklist = row.insertCell();
+    if(item.fotoCeklist) {
+      const img = document.createElement('img');
+      img.src = 'data:image/jpeg;base64,' + item.fotoCeklist;
+      img.style.width = '80px';
+      img.style.cursor = 'pointer';
+      img.addEventListener('click', () => showModal(img.src));
+      cellCeklist.appendChild(img);
+    }
+  }); // <-- Tutup forEach
+} // <-- Tutup renderTable
+
+// ---------------- AMBIL DATA ----------------
 function fetchData(){
   fetch(webAppURL)
     .then(res => res.json())
@@ -298,43 +463,39 @@ function fetchData(){
         alert("❌ Error: " + res.message);
       }
     })
-    .catch(err => alert("❌ Terjadi error: " + err));
+    .catch(err => console.log("Error fetch:", err));
 }
-
-// Submit data
-document.getElementById("laporanForm").addEventListener("submit", function(e){
-  e.preventDefault();
-
-  const data = {
-    namaAdmin: document.getElementById("namaAdmin").value,
-    tanggal: document.getElementById("tanggalLaporan").value,
-    reportMpp: document.getElementById("reportMpp").value,
-    reportIssue: document.getElementById("reportIssue").value,
-    reportMaterial: document.getElementById("reportMaterial").value,
-    reportProgres: document.getElementById("reportProgres").value,
-    reportCeklist: document.getElementById("reportCeklist").value
-  };
-
-  fetch(webAppURL, {
-    method: "POST",
-    body: JSON.stringify(data),
-    headers: { "Content-Type": "application/json" }
-  })
-  .then(res => res.json())
-  .then(res => {
-    if(res.status === "success"){
-      alert("✅ Laporan berhasil disimpan!");
-      document.getElementById("laporanForm").reset();
-      fetchData();
-    } else {
-      alert("❌ Gagal simpan laporan: " + res.message);
-    }
-  })
-  .catch(err => alert("❌ Terjadi error: " + err));
-});
 
 // Load data saat login halaman tampil
 fetchData();
+
+// ---------------- EXPORT EXCEL ----------------
+exportBtn.addEventListener("click", () => {
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.table_to_sheet(document.getElementById("rekapTable"));
+  XLSX.utils.book_append_sheet(wb, ws, "Laporan Harian");
+  XLSX.writeFile(wb, "Laporan_Harian.xlsx");
+});
+
+
+
+  // Ambil data
+  function fetchData(){
+    fetch(webAppURL)
+      .then(res => res.json())
+      .then(res => {
+        if(res.status === "success"){
+          renderTable(res.data);
+        } else {
+          alert("❌ Error: " + res.message);
+        }
+      })
+      .catch(err => console.log("Error fetch:", err));
+  }
+
+  // Load data saat login halaman tampil
+  fetchData();
+
   // ---------------- EXPORT EXCEL ----------------
   exportBtn.addEventListener("click", () => {
     const wb = XLSX.utils.book_new();
@@ -342,6 +503,9 @@ fetchData();
     XLSX.utils.book_append_sheet(wb, ws, "Laporan Harian");
     XLSX.writeFile(wb, "Laporan_Harian.xlsx");
   });
+
+});
+
 </script>
 
 
