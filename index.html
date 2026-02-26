@@ -122,13 +122,21 @@
   <!-- Halaman Utama (Laporan) -->
   <div id="laporanPage">
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary py-2">
-      <div class="container">
-        <a class="navbar-brand d-flex align-items-center" href="#">
-          <img src="asset/logo-rsp-2.png" alt="Logo" class="brand-logo" style="height:40px;">
-        </a>
-      </div>
-    </nav>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary py-2">
+  <div class="container">
+    
+    <!-- Logo -->
+    <a class="navbar-brand d-flex align-items-center" href="#">
+      <img src="asset/logo-rsp-2.png" alt="Logo" class="brand-logo" style="height:40px;">
+    </a>
+
+    <!-- Tombol Logout -->
+    <button class="btn btn-warning btn-sm fw-semibold" data-bs-toggle="modal" data-bs-target="#logoutModal">
+  Logout
+</button>
+
+  </div>
+</nav>
 
     <!-- Moto Rumah Ningrat -->
     <div class="moto-wrapper py-2">
@@ -206,27 +214,6 @@
         <button type="submit" class="btn btn-primary">Simpan Laporan</button>
       </form>
     </div>
-
-    
-   <div class="container mb-5">
-  <h3 class="mb-3 text-center fw-bold">📊 Rekap Laporan</h3>
-
-  <div class="d-flex justify-content-end mb-2">
-    <button class="btn btn-success" id="exportExcel">Export ke Excel</button>
-  </div>
-
-  <div class="table-responsive">
-    <table class="table table-bordered table-striped" id="rekapTable">
-      <thead class="table-primary">
-  <tr>
-    <th>Nama Admin</th>
-    <th>Tanggal</th>
-    <th>Report MPP</th>
-    <th>Report Issue</th>
-    <th>Report Material</th>
-    <th>Report Progres</th>
-    <th>Report Ceklist</th>
-  </tr>
 </thead>
 
       <tbody>
@@ -258,6 +245,33 @@
       <div class="modal-body text-center">
         <img id="modalImg" style="width:100%;">
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Logout -->
+<div class="modal fade" id="logoutModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title">Konfirmasi Logout</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+        Apakah Anda yakin ingin logout dari sistem?
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Batal
+        </button>
+        <button type="button" class="btn btn-warning fw-semibold" onclick="confirmLogout()">
+          Ya, Logout
+        </button>
+      </div>
+
     </div>
   </div>
 </div>
@@ -506,6 +520,15 @@ exportBtn.addEventListener("click", () => {
 
 });
 
+function confirmLogout() {
+    var modal = bootstrap.Modal.getInstance(document.getElementById('logoutModal'));
+    modal.hide();
+
+    document.getElementById("laporanPage").style.display = "none";
+    document.getElementById("loginPage").style.display = "flex";
+    document.getElementById("loginForm").reset();
+  }
+  
 </script>
 
 
